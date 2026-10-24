@@ -8,7 +8,7 @@ export default function useQueueUpdates(onUpdate) {
   callback.current = onUpdate;
 
   useEffect(() => {
-    const socket = io();
+    const socket = io(import.meta.env.VITE_API_URL || undefined);
     socket.on('connect', () => callback.current());
     socket.on('queue:update', () => callback.current());
     return () => socket.disconnect();
