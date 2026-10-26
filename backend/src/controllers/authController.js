@@ -12,8 +12,12 @@ const adminPhones = () =>
 exports.requestOtp = asyncHandler(async (req, res) => {
   const phone = cleanPhone(req.body.phone);
   if (!isValidPhone(phone)) throw httpError(400, 'Enter a valid phone number');
-  await otpService.sendOtp(phone);
-  res.json({ message: 'OTP sent (check the server console)' });
+
+  const otp = await otpService.sendOtp(phone);
+
+  // DEMO MODE: no SMS provider, so we send the OTP back to show in a pop-up.
+  // With a real SMS provider, remove `otp` from this response.
+  res.json({ message: 'OTP generated', otp });
 });
 
 exports.verifyOtp = asyncHandler(async (req, res) => {

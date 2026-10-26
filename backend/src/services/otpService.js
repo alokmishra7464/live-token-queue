@@ -39,6 +39,8 @@ exports.sendOtp = async (phone) => {
 
   // Mock SMS: print to the server console
   console.log(`[MOCK SMS] OTP for ${phone}: ${otp}`);
+
+  return otp; // <-- NEW: so the controller can send it to the browser (demo only)
 };
 
 exports.verifyOtp = async (phone, otp) => {

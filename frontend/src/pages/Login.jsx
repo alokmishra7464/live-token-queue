@@ -3,12 +3,14 @@ import { Navigate } from 'react-router-dom';
 import { api } from '../api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
+import OtpPopup from '../components/OtpPopup.jsx';
 
 export default function Login() {
   const { user, login } = useAuth();
   const [step, setStep] = useState('phone'); // 'phone' or 'otp'
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
+  const [demoOtp, setDemoOtp] = useState(''); // OTP shown in the pop-up
   const [error, setError] = useState('');
   const [wait, setWait] = useState(0); // seconds until "Resend" is allowed
 
@@ -24,10 +26,11 @@ export default function Login() {
   const sendOtp = async () => {
     setError('');
     try {
-      await api('/auth/request-otp', { method: 'POST', body: { phone } });
+      const data = await api('/auth/request-otp', { method: 'POST', body: { phone } });
       setStep('otp');
       setOtp('');
       setWait(30);
+      setDemoOtp(data.otp); // show the pop-up
     } catch (e) {
       setError(e.message);
     }
@@ -44,6 +47,12 @@ export default function Login() {
     }
   };
 
+  // "Use this OTP" fills the box and closes the pop-up
+  const useDemoOtp = () => {
+    setOtp(demoOtp);
+    setDemoOtp('');
+  };
+
   return (
     <div className="card">
       <h2>Log in</h2>
@@ -57,7 +66,7 @@ export default function Login() {
         </form>
       ) : (
         <form onSubmit={verifyOtp}>
-          <label>Enter the 6-digit OTP sent to {phone}</label>
+          <label>Enter the 6-digit OTP for {phone}</label>
           <input inputMode="numeric" maxLength={6} placeholder="123456" value={otp}
                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))} required />
           <button className="btn">Verify &amp; log in</button>
@@ -69,6 +78,8 @@ export default function Login() {
       )}
 
       <ErrorMessage text={error} />
+
+      <OtpPopup otp={demoOtp} onUse={useDemoOtp} onClose={() => setDemoOtp('')} />
     </div>
   );
 }
