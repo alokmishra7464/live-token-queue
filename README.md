@@ -1,5 +1,7 @@
 # Queue Token App (MERN)
 
+# Live Link : https://live-token-queue-1.onrender.com
+
 Customers log in with a phone OTP, take a token (e.g. `A-042`) and watch their
 position update live. An admin calls the next customer, skips no-shows and marks
 customers as served.
